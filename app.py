@@ -4,14 +4,18 @@ import hashlib
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "secret_key"
+conn = pymssql.connect("127.0.0.1", "sa", "123", "OnlineRetail")
+conn.autocommit(True)
+cursor = conn.cursor()
 
 def checkUsername(username):
 	if username is "":
 		return "用户名不能为空"
 	if not username.isalnum():
 		return "含有非法字符，请使用数字和字母"
-	# 这边要改成sql
-	if username in ["aaa", "bbb"]:
+	cursor.execute("select userName from Customer")
+	allUsername = cursor.fetchall()
+	if (username,) in allUsername:
 		return "用户名已被注册"
 	else:
 		return "用户名未被使用"
@@ -375,17 +379,27 @@ def cartGate():
 
 @app.route('/index', methods = ["post"])
 def indexGate():
-	name = request.form["username"]
-	# 这边要改成sql
+	username = request.form["username"]
+	pwd = request.form["pwd"]
+	if pwd == "":
+		return "密码不能为空"
 	# 是注册
 	if request.values.get("register") is not None:
-		nameState = checkUsername(name)
+		nameState = checkUsername(username)
 		if not nameState == "用户名未被使用":
 			return nameState
+		encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+		cursor.execute("insert into Customer values ('{0}', '{1}')".format(username, encryptedpwd))
 	# 是登录
 	else:
-		pass
-	session["username"] = name
+		cursor.execute("select encryptedPassword from Customer where userName = '{0}'".format(username))
+		fetchedpwd = cursor.fetchone()[0]
+		encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+		if fetchedpwd != encryptedpwd:
+			return "密码错误"
+
+	# 记录登录信息
+	session["username"] = username
 
 	html = '''
 	<!DOCTYPE html>
@@ -409,25 +423,22 @@ def indexGate():
 	html += '''
 		<h1> 欢迎，{0} </h1>
 		<a href="/cart"> 查看购物车 </a> <br> <br>
-	'''.format(name)
+	'''.format(username)
 
 	# 读取商品信息
-	categories = ["电器", "服装"]
-	for i in range(len(categories)):
+	cursor.execute("select categoryID, productCategory from Category")
+	categories = cursor.fetchall()
+	for categoryID, categoryName in categories:
 		html += '''
 			<div class="category">
 			<h1> {0} </h1>
-		'''.format(categories[i])
+		'''.format(categoryName)
 
 		# 这边用sql语句换掉
-		if categories[i] == "电器":
-			goods = [(10001, "PONY电视", 29000, 233, 9998, "static/images/10001.jpg", "这里是备注"), (10003, "Switch", 2300, 100, 10000, "static/images/10003.jpg", "这里是备注")]
-		elif categories[i] == "服装":
-			goods = [(10002, "小裙子", 1000, 500, 99999, "static/images/10002.jpg", "这里是备注")]
-		else:
-			goods = []
+		cursor.execute("select productID, productName, productPrice, saleAmount, stockAmount, productFigure, productDescription from Product where categoryID = {0}".format(categoryID))
+		goods = cursor.fetchall()
 
-		for idx, name, price, sold, stock, imageurl, remark in goods:
+		for idx, goodname, price, sold, stock, imageurl, description in goods:
 			html += '''
 					<div class="goods">
 						<div class="photo"><img src="{5}"></div>
@@ -449,7 +460,7 @@ def indexGate():
 							}});
 						}});
 					</script>
-			'''.format(idx, name, price, sold, stock, imageurl, remark)
+			'''.format(idx, goodname, price, sold, stock, imageurl, description)
 
 		html += '''
 			</div>
