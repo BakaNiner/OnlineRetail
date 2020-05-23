@@ -58,7 +58,7 @@
     </schema>
     <schema id="17" parent="2" name="dbo">
       <ObjectId>1</ObjectId>
-      <IntrospectionTimestamp>2020-05-24.01:03:47.070</IntrospectionTimestamp>
+      <IntrospectionTimestamp>2020-05-24.06:20:48.900</IntrospectionTimestamp>
       <Current>1</Current>
     </schema>
     <schema id="18" parent="2" name="guest">
@@ -80,17 +80,17 @@
     <table id="22" parent="17" name="OrderItem">
       <ObjectId>805577908</ObjectId>
       <CreatedTimestamp>2020-05-24.01:03:30.360</CreatedTimestamp>
-      <ModifiedTimestamp>2020-05-24.01:03:30.360</ModifiedTimestamp>
+      <ModifiedTimestamp>2020-05-24.04:58:10.173</ModifiedTimestamp>
     </table>
     <table id="23" parent="17" name="OrderTable">
       <ObjectId>645577338</ObjectId>
       <CreatedTimestamp>2020-05-24.01:03:30.357</CreatedTimestamp>
-      <ModifiedTimestamp>2020-05-24.01:03:30.357</ModifiedTimestamp>
+      <ModifiedTimestamp>2020-05-24.04:58:05.517</ModifiedTimestamp>
     </table>
     <table id="24" parent="17" name="Product">
       <ObjectId>613577224</ObjectId>
       <CreatedTimestamp>2020-05-24.01:03:30.353</CreatedTimestamp>
-      <ModifiedTimestamp>2020-05-24.01:03:30.353</ModifiedTimestamp>
+      <ModifiedTimestamp>2020-05-24.04:57:56.393</ModifiedTimestamp>
     </table>
     <table id="25" parent="17" name="Review">
       <ObjectId>773577794</ObjectId>
@@ -105,7 +105,7 @@
     <table id="27" parent="17" name="ShoppingCart">
       <ObjectId>677577452</ObjectId>
       <CreatedTimestamp>2020-05-24.01:03:30.357</CreatedTimestamp>
-      <ModifiedTimestamp>2020-05-24.01:03:30.357</ModifiedTimestamp>
+      <ModifiedTimestamp>2020-05-24.02:44:55.577</ModifiedTimestamp>
     </table>
     <column id="28" parent="20" name="categoryID">
       <Position>1</Position>
@@ -183,7 +183,7 @@
     </column>
     <column id="40" parent="22" name="totalAmount">
       <Position>4</Position>
-      <DataType>decimal(32,8)|0s</DataType>
+      <DataType>float|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <index id="41" parent="22" name="PK__OrderIte__BD6321F901ECAB7A">
@@ -221,7 +221,7 @@ itemID</ColNames>
     </column>
     <column id="46" parent="23" name="totalAmount">
       <Position>4</Position>
-      <DataType>decimal(32,8)|0s</DataType>
+      <DataType>float|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <column id="47" parent="23" name="orderDate">
@@ -276,7 +276,7 @@ itemID</ColNames>
     </column>
     <column id="56" parent="24" name="productPrice">
       <Position>6</Position>
-      <DataType>decimal(32,8)|0s</DataType>
+      <DataType>float|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <column id="57" parent="24" name="saleAmount">
@@ -417,17 +417,12 @@ itemID</ColNames>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="82" parent="27" name="productPrice">
-      <Position>4</Position>
-      <DataType>decimal(32,8)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="83" parent="27" name="addTime">
+    <column id="82" parent="27" name="addTime">
       <Position>5</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="84" parent="27" name="PK__Shopping__04C0C689A414F3F5">
+    <index id="83" parent="27" name="PK__Shopping__04C0C689A414F3F5">
       <Position>1</Position>
       <NameSurrogate>1</NameSurrogate>
       <ColNames>customerID
@@ -435,7 +430,7 @@ productID</ColNames>
       <Clustering>1</Clustering>
       <Unique>1</Unique>
     </index>
-    <key id="85" parent="27" name="PK__Shopping__04C0C689A414F3F5">
+    <key id="84" parent="27" name="PK__Shopping__04C0C689A414F3F5">
       <ObjectId>693577509</ObjectId>
       <NameSurrogate>1</NameSurrogate>
       <CreatedTimestamp>2020-05-24.01:03:30.357</CreatedTimestamp>

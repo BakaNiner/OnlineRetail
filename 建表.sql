@@ -21,7 +21,7 @@ CREATE TABLE Product(
     productDescription NVARCHAR(512)  ,
     productFigure NVARCHAR(32)  ,
     categoryID INT NOT NULL ,
-    productPrice DECIMAL(32,8) NOT NULL ,
+    productPrice FLOAT(53) NOT NULL ,
     saleAmount INT NOT NULL ,
     stockAmount INT NOT NULL ,
 ) ;
@@ -30,7 +30,7 @@ CREATE TABLE OrderTable(
     orderID INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
     shippingAddressID INT NOT NULL ,
     customerID INT  ,
-    totalAmount DECIMAL(32,8) NOT NULL ,
+    totalAmount FLOAT(53) NOT NULL ,
     orderDate DATE NOT NULL ,
     is_complete VARCHAR(1) NOT NULL ,
 ) ;
@@ -39,7 +39,6 @@ CREATE TABLE ShoppingCart(
     customerID INT NOT NULL,
     productID INT NOT NULL,
     productQuantity INT NOT NULL ,
-    productPrice DECIMAL(32,8) NOT NULL ,
     addTime DATE NOT NULL ,
     PRIMARY KEY(customerID, productID),
 ) ;
@@ -74,7 +73,7 @@ CREATE TABLE OrderItem(
     orderID INT NOT NULL,
     itemID INT NOT NULL,
     quantity INT NOT NULL ,
-    totalAmount DECIMAL(32,8) NOT NULL ,
+    totalAmount FLOAT(53) NOT NULL ,
     PRIMARY KEY(orderID, itemID),
 ) ;
 GO

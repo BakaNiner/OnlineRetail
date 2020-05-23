@@ -1,6 +1,8 @@
 from flask import Flask, request, session
 import pymssql
 import hashlib
+import time
+import ast
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "secret_key"
@@ -71,7 +73,12 @@ def loginGate():
 		});
 		$("#loginButton").on("click", function() {
 			state = $("#Hint").html();
-			if(state != "用户名未被使用") {
+			if(state == "") {
+				$.post("/checkUsername", {username:username}, function(result) {
+					$("#Hint").html(result);
+				});
+			}
+			if(state != "用户名已被注册") {
 				alert(state)
 				return false;
 			} else
@@ -82,14 +89,6 @@ def loginGate():
 	</html>
 	'''
 	return html
-
-@app.route('/add2cart', methods = ["post"])
-def add2cartGate():
-	idx = request.form["idx"]
-	number = request.form["number"]
-	if not number.isdigit():
-		return "添加购物车失败！请检查数量是否正确"
-	return "添加购物车成功"
 
 @app.route('/comment', methods = ["get"])
 def commentGate():
@@ -120,13 +119,13 @@ def commentGate():
 			暂无评价
 		'''
 	else:
-		for userid, rate, comment, time in comments:
+		for userid, rate, comment, reviewtime in comments:
 			# 这边可能要改成username
 			html += '''
 				<div class="comment">
 				<h3> 用户{0}***{1} </h3>
 			'''.format(str(userid)[0], str(userid)[-1])
-			html += "<p>" + "★" * rate + "☆" * (5 - rate) + " " + time + "</p>"
+			html += "<p>" + "★" * rate + "☆" * (5 - rate) + " " + reviewtime + "</p>"
 			html += "<p>{0}</p>".format(comment)
 			html += '''
 				</div>
@@ -198,6 +197,7 @@ def makeCommentGate():
 @app.route('/order', methods = ["get"])
 def orderGate():
 	username = session.get("username")
+	userid = session.get("userid")
 	if username is None:
 		return "您未登录！"
 	# TBD
@@ -205,20 +205,70 @@ def orderGate():
 
 @app.route('/commitOrder', methods = ["post"])
 def commitOrderGate():
+	username = session.get("username")
+	userid = session.get("userid")
+	cart = session.get("{0}_cart".format(userid))
+	if username is None:
+		return "您未登录"
+	if cart is None:
+		return "您未提交订单"
+
+	cursor.execute("create table #tempCart(productID INT, productNumber INT)")
+	for idx, goodname, price, number, stock in cart:
+		cursor.execute("insert into #tempCart values ({0}, {1})".format(idx, number))
+
+	cursor.execute("select stockAmount from Product where productID = {0}".format(cart[0][0]))
+	beforeStock = cursor.fetchall()[0][0]
+
+	cursor.execute("""
+	               update Product set stockAmount = stockAmount - productNumber, saleAmount = saleAmount + productNumber from #tempCart
+	               where Product.productID = #tempCart.productID and not exists(
+	               select * from Product, #tempCart where Product.productID = #tempCart.productID and productNumber > stockAmount)""")
+	cursor.execute("drop table #tempCart")
+
+	cursor.execute("select stockAmount from Product where productID = {0}".format(cart[0][0]))
+	afterStock = cursor.fetchall()[0][0]
+	if afterStock == beforeStock:
+		session.pop("{0}_cart".format(userid))
+		return "有商品供货不足"
+
 	streetAddress = request.form["streetAddress"]
 	cityName = request.form["cityName"]
 	provinceName = request.form["provinceName"]
 	postalCode = request.form["postalCode"]
 	phoneNumber = request.form["phoneNumber"]
 	is_default = request.form["is_default"]
-	print(streetAddress, cityName, provinceName, postalCode, phoneNumber, is_default)
+
+	if is_default == "1":
+		cursor.execute("delete from ShipAddress where customerID = {0} and is_default = '1'".format(userid))
+
+	cursor.execute("insert into ShipAddress values ('{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}') select @@IDENTITY".format(streetAddress, cityName, provinceName, postalCode, userid, phoneNumber, is_default))
+	# cursor.execute("select addressID from ShipAddress where")
+	addressID = cursor.fetchall()[0][0]
+
+	totalAmount = sum(list(map(lambda x : x[2] * x[3], cart)))
+	orderDate = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+	cursor.execute("insert into OrderTable values ({0}, {1}, {2}, '{3}', 0) select @@IDENTITY".format(addressID, userid, totalAmount, orderDate))
+	orderID = cursor.fetchall()[0][0]
+
+	for idx, goodname, price, number, stock in cart:
+		cursor.execute("insert into OrderItem values ({0}, {1}, {2}, {3})".format(orderID, idx, number, price * number))
+
+	for idx, goodname, price, number, stock in cart:
+		cursor.execute("delete from ShoppingCart where customerID = {0} and productID = {1}".format(userid, idx))
+
+	session.pop("{0}_cart".format(userid))
 	return "订单提交成功"
 
 @app.route('/createOrder', methods = ["post"])
 def createOrder():
 	username = session.get("username")
+	userid = session.get("userid")
 	if username is None:
-		return "您未登录！"
+		return "您未登录"
+
+	if len(request.form) == 0:
+		return "您未选择所要购买物品"
 
 	html = '''
 		<!DOCTYPE html>
@@ -228,7 +278,7 @@ def createOrder():
 			<title> Online Retail </title>
 			<script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 			<style type=text/css>
-				.goods{ width:300px; height:100px; margin:50px auto; border:solid 1px gray; overflow:hidden; }
+				.goods{ width:400px; height:100px; margin:50px auto; border:solid 1px gray; overflow:hidden; }
 				.intro{ float:left; width:300px; margin:0 50px 0 50px; }
 				.address{ width:400px; height:500px; margin:50px auto; }
 			</style>
@@ -240,21 +290,24 @@ def createOrder():
 		<h1> 新建订单 </h1>
 	'''
 
-	# 这边需要结合购物车数据库和返回值一起判断
-	cart = [(10001, "PONY电视", 29000, 1), (10003, "Switch", 2300, 2)]
+	cursor.execute("select ShoppingCart.productID, productName, productPrice, productQuantity, stockAmount from ShoppingCart, Product where customerID = {0} and ShoppingCart.productID = Product.productID".format(userid))
+	cart = cursor.fetchall()
+	cart = list(filter(lambda x : request.form.get("{}_checkbox".format(x[0])) is not None, cart))
+	session["{0}_cart".format(userid)] = cart
 
-	for idx, goodname, price, number in cart:
+	for idx, goodname, price, number, stock in cart:
 		html += '''
 			<div class="goods">
 				<div class="intro">
 					<h3> {1} </h3>
-					<p> 价格：{2}，购买：{3}件 </p>
+					<p> 价格：{2}，购买：{3}件，库存：{4}件 </p>
 				</div>
 			</div>
-		'''.format(idx, goodname, price, number)
+		'''.format(idx, goodname, price, number, stock)
 
 	# 获取默认地址
-	defaultAddress = [("中关村", "北京", "北京", "100871", "12345678910")]
+	cursor.execute("select streetAddress, cityName, provinceName, postalCode, phoneNumber from ShipAddress where customerID = {0} and is_default = 1".format(userid))
+	defaultAddress = cursor.fetchall()
 
 	if not defaultAddress:
 		html += '''
@@ -284,16 +337,16 @@ def createOrder():
 
 	html += '''
 		<script type="text/javascript">
-			$("commit").on("click", function() {
+			$("#commit").on("click", function() {
 				var streetAddress = $("#streetAddress").val();
 				var cityName = $("#cityName").val();
 				var provinceName = $("#provinceName").val();
 				var postalCode = $("#postalCode").val();
 				var phoneNumber = $("#phoneNumber").val();
-				var is_default = false;
-				if($("#is_default").attr("checked") == true)
-					is_default = true;
-					
+				var is_default = "0";
+				if($("#is_default").prop("checked") == true)
+					is_default = "1";
+
 				$.post("/commitOrder", {streetAddress:streetAddress, cityName:cityName, provinceName:provinceName, postalCode:postalCode, phoneNumber:phoneNumber, is_default:is_default}, function(result) {
 					alert(result);
 					window.location.href = "/order";
@@ -309,14 +362,42 @@ def createOrder():
 
 	return html
 
+@app.route('/add2cart', methods = ["post"])
+def add2cartGate():
+	username = session.get("username")
+	userid = session.get("userid")
+	if username is None:
+		return "您未登录！"
+
+	idx = request.form["idx"]
+	number = request.form["number"]
+	if not number.isdigit():
+		return "添加购物车失败！请检查数量是否正确"
+
+	addtime = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+	cursor.execute("select * from ShoppingCart where customerID = {0} and productID = {1}".format(userid, idx))
+	res = cursor.fetchall()
+	if res:
+		cursor.execute("update ShoppingCart set productQuantity = productQuantity + {2}, addTime = '{3}' where customerID = {0} and productID = {1}".format(userid, idx, number, addtime))
+	else:
+		cursor.execute("insert into ShoppingCart values ({0}, {1}, {2}, '{3}')".format(userid, idx, number, addtime))
+	return "添加购物车成功"
+
 @app.route('/removeCart', methods = ["post"])
 def removeCartGate():
+	username = session.get("username")
+	userid = session.get("userid")
+	if username is None:
+		return "您未登录！"
+
 	idx = request.form["idx"]
+	cursor.execute("delete from ShoppingCart where customerID = {0} and productID = {1}".format(userid, idx))
 	return "移出成功"
 
 @app.route('/cart', methods = ["get"])
 def cartGate():
 	username = session.get("username")
+	userid = session.get("userid")
 	if username is None:
 		return "您未登录！"
 
@@ -343,18 +424,21 @@ def cartGate():
 		<form action="/createOrder" method="post">
 	'''.format(username)
 
-	# 这边要改成sql
-	cart = [(10001, "PONY电视", 29000, 9998, "static/images/10001.jpg", 1), (10003, "Switch", 2300, 10000, "static/images/10003.jpg", 2)]
+	cursor.execute("""
+				   select ShoppingCart.productID, productName, productPrice, productFigure, productQuantity, addTime, stockAmount
+	 			   from ShoppingCart, Product
+	 			   where customerID = {0} and ShoppingCart.productID = Product.productID""".format(userid))
+	cart = cursor.fetchall()
 
 	# 读取购物车
-	for idx, goodname, price, stock, image, number in cart:
+	for idx, goodname, price, image, number, addtime, stock in cart:
 		html += '''
 			<div class="goods">
-				<div class="photo"><img src="{4}"></div>
+				<div class="photo"><img src="{3}"></div>
 				<div class="intro">
 					<h3> {1} </h3>
-					<p> 价格：{2}，库存：{3} </p>
-					<p> 购买：{5}件 </p>
+					<p> 价格：{2}，购买：{4}件，库存：{6}件 </p>
+					<p> 加入时间：{5} </p>
 					是否购买：<input type=checkbox name="{0}_checkbox" style="height:20px; width:20px;">
 					<br><br><input type=button id="{0}_remove" value="移出购物车">
 				</div>
@@ -367,39 +451,47 @@ def cartGate():
 					}});
 				</script>
 			</div>
-		'''.format(idx, goodname, price, stock, image, number)
+		'''.format(idx, goodname, price, image, number, addtime, stock)
+
+	if cart:
+		html += '''
+		<div align="center"><input type=submit value="提交订单"></div>
+		'''
 
 	html += '''
-	<div align="center"><input type=submit value="提交订单"></div>
 	</form>
 	</body>
 	</html>
 	'''
 	return html
 
-@app.route('/index', methods = ["post"])
+@app.route('/index', methods = ["get", "post"])
 def indexGate():
-	username = request.form["username"]
-	pwd = request.form["pwd"]
-	if pwd == "":
-		return "密码不能为空"
-	# 是注册
-	if request.values.get("register") is not None:
-		nameState = checkUsername(username)
-		if not nameState == "用户名未被使用":
-			return nameState
-		encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
-		cursor.execute("insert into Customer values ('{0}', '{1}')".format(username, encryptedpwd))
-	# 是登录
+	if session.get("username") is None:
+		username = request.form["username"]
+		pwd = request.form["pwd"]
+		if pwd == "":
+			return "密码不能为空"
+		# 是注册
+		if request.values.get("register") is not None:
+			nameState = checkUsername(username)
+			if not nameState == "用户名未被使用":
+				return nameState
+			encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+			cursor.execute("insert into Customer values ('{0}', '{1}')".format(username, encryptedpwd))
+		# 是登录
+		else:
+			cursor.execute("select encryptedPassword from Customer where userName = '{0}'".format(username))
+			fetchedpwd = cursor.fetchall()[0][0]
+			encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+			if fetchedpwd != encryptedpwd:
+				return "密码错误"
+		# 记录登录信息
+		session["username"] = username
+		cursor.execute("select customerID from Customer where userName = '{0}'".format(username))
+		session["userid"] = cursor.fetchall()[0][0]
 	else:
-		cursor.execute("select encryptedPassword from Customer where userName = '{0}'".format(username))
-		fetchedpwd = cursor.fetchone()[0]
-		encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
-		if fetchedpwd != encryptedpwd:
-			return "密码错误"
-
-	# 记录登录信息
-	session["username"] = username
+		username = session["username"]
 
 	html = '''
 	<!DOCTYPE html>
