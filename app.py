@@ -551,7 +551,10 @@ def cartGate():
 
 @app.route('/index', methods = ["get", "post"])
 def indexGate():
-	if session.get("username") is None:
+	if session.get("username") is None or (request.form.get("username") != session["username"]):
+		if request.form.get("username") is None:
+			return "请返回登录界面进行登录！"
+
 		username = request.form["username"]
 		pwd = request.form["pwd"]
 		if pwd == "":
