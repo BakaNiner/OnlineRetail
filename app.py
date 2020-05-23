@@ -191,16 +191,124 @@ def makeCommentGate():
 	'''.format(idx)
 	return html
 
+@app.route('/order', methods = ["get"])
+def orderGate():
+	username = session.get("username")
+	if username is None:
+		return "您未登录！"
+	# TBD
+	return "这里应该有您的订单"
+
+@app.route('/commitOrder', methods = ["post"])
+def commitOrderGate():
+	streetAddress = request.form["streetAddress"]
+	cityName = request.form["cityName"]
+	provinceName = request.form["provinceName"]
+	postalCode = request.form["postalCode"]
+	phoneNumber = request.form["phoneNumber"]
+	is_default = request.form["is_default"]
+	print(streetAddress, cityName, provinceName, postalCode, phoneNumber, is_default)
+	return "订单提交成功"
+
+@app.route('/createOrder', methods = ["post"])
+def createOrder():
+	username = session.get("username")
+	if username is None:
+		return "您未登录！"
+
+	html = '''
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<meta charset="UTF-8">
+			<title> Online Retail </title>
+			<script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+			<style type=text/css>
+				.goods{ width:300px; height:100px; margin:50px auto; border:solid 1px gray; overflow:hidden; }
+				.intro{ float:left; width:300px; margin:0 50px 0 50px; }
+				.address{ width:400px; height:500px; margin:50px auto; }
+			</style>
+		</head>
+		<body>
+		'''
+
+	html += '''
+		<h1> 新建订单 </h1>
+	'''
+
+	# 这边需要结合购物车数据库和返回值一起判断
+	cart = [(10001, "PONY电视", 29000, 1), (10003, "Switch", 2300, 2)]
+
+	for idx, goodname, price, number in cart:
+		html += '''
+			<div class="goods">
+				<div class="intro">
+					<h3> {1} </h3>
+					<p> 价格：{2}，购买：{3}件 </p>
+				</div>
+			</div>
+		'''.format(idx, goodname, price, number)
+
+	# 获取默认地址
+	defaultAddress = [("中关村", "北京", "北京", "100871", "12345678910")]
+
+	if not defaultAddress:
+		html += '''
+			<div class="address" align="center">
+			街道：<input type=text id="streetAddress"> <br> <br>
+			城市：<input type=text id="cityName"> <br> <br>
+			省份：<input type=text id="provinceName"> <br> <br>
+			邮政编码：<input type=text id="postalCode"> <br> <br>
+			联系方式：<input type=text id="phoneNumber"> <br> <br>
+			设为默认地址：<input type=checkbox id="is_default"> <br> <br>
+			<input type=button id="commit" value="提交订单">
+			</div>
+		'''
+	else:
+		street, city, province, post, phone = defaultAddress[0]
+		html += '''
+			<div class="address" align="center">
+			街道：<input type=text id="streetAddress" value="{0}"> <br> <br>
+			城市：<input type=text id="cityName" value="{1}"> <br> <br>
+			省份：<input type=text id="provinceName" value="{2}"> <br> <br>
+			邮政编码：<input type=text id="postalCode" value="{3}"> <br> <br>
+			联系方式：<input type=text id="phoneNumber" value="{4}"> <br> <br>
+			设为默认地址：<input type=checkbox id="is_default" checked="checked"> <br> <br>
+			<input type=button id="commit" value="提交订单">
+			</div>
+		'''.format(street, city, province, post, phone)
+
+	html += '''
+		<script type="text/javascript">
+			$("commit").on("click", function() {
+				var streetAddress = $("#streetAddress").val();
+				var cityName = $("#cityName").val();
+				var provinceName = $("#provinceName").val();
+				var postalCode = $("#postalCode").val();
+				var phoneNumber = $("#phoneNumber").val();
+				var is_default = false;
+				if($("#is_default").attr("checked") == true)
+					is_default = true;
+					
+				$.post("/commitOrder", {streetAddress:streetAddress, cityName:cityName, provinceName:provinceName, postalCode:postalCode, phoneNumber:phoneNumber, is_default:is_default}, function(result) {
+					alert(result);
+					window.location.href = "/order";
+				});
+			});
+		</script>
+	'''
+
+	html += '''
+	</body>
+	</html>
+	'''
+
+	return html
+
 @app.route('/removeCart', methods = ["post"])
 def removeCartGate():
 	idx = request.form["idx"]
 	return "移出成功"
-
-@app.route('/createOrder', methods = ["post"])
-def createOrder():
-	# TBD
-	cart = [(10001, "PONY电视", 29000, 1), (10003, "Switch", 2300, 2)]
-	return "None"
 
 @app.route('/cart', methods = ["get"])
 def cartGate():
