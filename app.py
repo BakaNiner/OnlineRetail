@@ -96,9 +96,13 @@ def commentGate():
 	if not idx.isdigit():
 		return "错误商品id"
 
-	# 这边要改成sql
-	goodname = "商品名"
-	comments = [(10086, 5, "很好！", "2020-5-24"), (30009, 2, "不行！", "2020-2-31")]
+	cursor.execute("select productName from Product where productID = {0}".format(idx))
+	res = cursor.fetchall()
+	if len(res) == 0:
+		return "错误商品id"
+	goodname = res[0][0]
+	cursor.execute("select userName, grade, comment, reviewTime from Review, Customer where productID = {0} and reviewerID = customerID".format(idx))
+	comments = cursor.fetchall()
 
 	html = '''
 	<!DOCTYPE html>
@@ -119,13 +123,13 @@ def commentGate():
 			暂无评价
 		'''
 	else:
-		for userid, rate, comment, reviewtime in comments:
+		for userName, grade, comment, reviewTime in comments:
 			# 这边可能要改成username
 			html += '''
 				<div class="comment">
 				<h3> 用户{0}***{1} </h3>
-			'''.format(str(userid)[0], str(userid)[-1])
-			html += "<p>" + "★" * rate + "☆" * (5 - rate) + " " + reviewtime + "</p>"
+			'''.format(str(userName)[0], str(userName)[-1])
+			html += "<p>" + "★" * grade + "☆" * (5 - grade) + " " + reviewTime + "</p>"
 			html += "<p>{0}</p>".format(comment)
 			html += '''
 				</div>
@@ -139,11 +143,26 @@ def commentGate():
 
 @app.route('/commitComment', methods = ["post"])
 def commitCommentGate():
+	username = session.get("username")
+	userid = session.get("userid")
+	if username is None:
+		return "您未登录！"
+
 	idx = request.form["idx"]
 	text = request.form["text"]
 	rate = request.form["rate"]
 	if text == "":
 		return "评价不能为空"
+	if not idx.isdigit():
+		return "错误商品id"
+
+	cursor.execute("select productName from Product where productID = {0}".format(idx))
+	res = cursor.fetchall()
+	if len(res) == 0:
+		return "错误商品id"
+
+	reviewTime = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+	cursor.execute("insert into Review values ({0}, {1}, {2}, '{3}', '{4}')".format(userid, idx, rate, text, reviewTime))
 	return "发表评论成功"
 
 @app.route('/makeComment', methods = ["get"])
@@ -152,8 +171,14 @@ def makeCommentGate():
 	if not idx.isdigit():
 		return "错误商品id"
 
-	# 这边要改成sql
-	goodname = "商品名"
+	cursor.execute("select productName from Product where productID = {0}".format(idx))
+	res = cursor.fetchall()
+	if len(res) == 0:
+		return "错误商品id"
+	goodname = res[0][0]
+
+	# TBD 给出customerID和productID，判断这个人有没有买过这个商品
+	cursor.execute("")
 
 	html = '''
 	<!DOCTYPE html>
@@ -200,8 +225,67 @@ def orderGate():
 	userid = session.get("userid")
 	if username is None:
 		return "您未登录！"
-	# TBD
-	return "这里应该有您的订单"
+
+	html = '''
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> Online Retail </title>
+		<script src="http://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+		<style type=text/css>
+			.order{ border-top:5px solid black; }
+			.goods{ width:1000px; height:300px; margin:50px auto; border:solid 1px gray; overflow:hidden; }
+			.photo{ float:left; width:400px; height:300px; text-align:center; }
+			.photo img{ display:block; width:auto; height:auto; max-width:100%; max-height:100%; margin:0 auto; }
+			.intro{ float:right; width:550px; }
+		</style>
+	</head>
+	<body>
+	'''
+
+	# 账号信息
+	html += '''
+		<h1> 用户{0}的所有订单 </h1>
+	'''.format(username)
+
+	# 读取商品信息
+	cursor.execute("select orderID, shippingAddressID, totalAmount, orderDate, is_complete from OrderTable where customerID = {0}".format(userid))
+	orders = cursor.fetchall()
+	for orderID, shippingAddressID, totalAmount, orderDate, is_complete in orders:
+		html += '''
+			<div class="order">
+			<h1> 订单号：{0} </h1>
+		'''.format(orderID)
+
+		cursor.execute("select itemID, productName, quantity, productFigure from OrderItem, Product where orderID = {0} and OrderItem.itemID = Product.productID".format(orderID))
+		goods = cursor.fetchall()
+		for idx, goodname, quantity, imageurl in goods:
+			html += '''
+					<div class="goods">
+						<div class="photo"><img src="{3}"></div>
+						<div class="intro">
+							<h3> {1} </h3>
+							<p> 已买：{2}</p>
+						</div>
+					</div>
+			'''.format(idx, goodname, quantity, imageurl)
+
+		cursor.execute("select streetAddress, cityName, provinceName, postalCode, phoneNumber from ShipAddress where addressID = {0}".format(shippingAddressID))
+		streetAddress, cityName, provinceName, postalCode, phoneNumber = cursor.fetchall()[0]
+		html += '''
+			<p> 收货地址：街道：{0}，城市：{1}，省份：{2}，邮政编码：{3}，联系方式：{4} </p>
+			<p> 总额：{5} </p>
+			<p> 下单时间：{6} </p>
+			<p> 是否完成：{7} </p>
+			</div>
+		'''.format(streetAddress, cityName, provinceName, postalCode, phoneNumber, totalAmount, orderDate, "未完成" if is_complete == '0' else "已完成")
+
+	html += '''
+	</body>
+	</html>
+	'''
+	return html
 
 @app.route('/commitOrder', methods = ["post"])
 def commitOrderGate():
@@ -240,7 +324,7 @@ def commitOrderGate():
 	is_default = request.form["is_default"]
 
 	if is_default == "1":
-		cursor.execute("delete from ShipAddress where customerID = {0} and is_default = '1'".format(userid))
+		cursor.execute("update ShipAddress set is_default = '0' where customerID = {0} and is_default = '1'".format(userid))
 
 	cursor.execute("insert into ShipAddress values ('{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}') select @@IDENTITY".format(streetAddress, cityName, provinceName, postalCode, userid, phoneNumber, is_default))
 	# cursor.execute("select addressID from ShipAddress where")
@@ -515,6 +599,7 @@ def indexGate():
 	html += '''
 		<h1> 欢迎，{0} </h1>
 		<a href="/cart"> 查看购物车 </a> <br> <br>
+		<a href="/order"> 查看订单 </a> <br> <br>
 	'''.format(username)
 
 	# 读取商品信息
@@ -526,10 +611,8 @@ def indexGate():
 			<h1> {0} </h1>
 		'''.format(categoryName)
 
-		# 这边用sql语句换掉
 		cursor.execute("select productID, productName, productPrice, saleAmount, stockAmount, productFigure, productDescription from Product where categoryID = {0}".format(categoryID))
 		goods = cursor.fetchall()
-
 		for idx, goodname, price, sold, stock, imageurl, description in goods:
 			html += '''
 					<div class="goods">

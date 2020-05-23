@@ -39,7 +39,35 @@
         <item name="OnlineRetail@localhost" type="feb32156:DbDataSourceImpl" />
         <item name="OnlineRetail: database" type="ccb7ac2a:MsImplModel$Database" />
         <item name="dbo: schema" type="2865ee2e:MsImplModel$Schema" />
+        <item name="Customer: table" type="63ab2ba1:MsImplModel$Table" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="OnlineRetail@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="OnlineRetail: database" type="ccb7ac2a:MsImplModel$Database" />
+        <item name="dbo: schema" type="2865ee2e:MsImplModel$Schema" />
+        <item name="OrderItem: table" type="63ab2ba1:MsImplModel$Table" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="OnlineRetail@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="OnlineRetail: database" type="ccb7ac2a:MsImplModel$Database" />
+        <item name="dbo: schema" type="2865ee2e:MsImplModel$Schema" />
+        <item name="OrderTable: table" type="63ab2ba1:MsImplModel$Table" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="OnlineRetail@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="OnlineRetail: database" type="ccb7ac2a:MsImplModel$Database" />
+        <item name="dbo: schema" type="2865ee2e:MsImplModel$Schema" />
         <item name="Product: table" type="63ab2ba1:MsImplModel$Table" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="OnlineRetail@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="OnlineRetail: database" type="ccb7ac2a:MsImplModel$Database" />
+        <item name="dbo: schema" type="2865ee2e:MsImplModel$Schema" />
+        <item name="Review: table" type="63ab2ba1:MsImplModel$Table" />
       </path>
     </expand>
     <select />
@@ -129,7 +157,7 @@
       <updated>1590128955436</updated>
       <workItem from="1590128957577" duration="26298000" />
       <workItem from="1590209513785" duration="891000" />
-      <workItem from="1590210632522" duration="31389000" />
+      <workItem from="1590210632522" duration="33538000" />
     </task>
     <servers />
   </component>
@@ -168,25 +196,25 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="823" y="410" key="Github.ShareDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590209813321" />
-    <state width="1877" height="285" key="GridCell.Tab.0.bottom" timestamp="1590246459882">
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom" timestamp="1590248679658">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590246459882" />
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590248679658" />
     <state width="1877" height="348" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
-    <state width="1877" height="285" key="GridCell.Tab.0.center" timestamp="1590246459882">
+    <state width="1877" height="285" key="GridCell.Tab.0.center" timestamp="1590248679658">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590246459882" />
+    <state width="1877" height="285" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590248679658" />
     <state width="1877" height="348" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
-    <state width="1877" height="285" key="GridCell.Tab.0.left" timestamp="1590246459882">
+    <state width="1877" height="285" key="GridCell.Tab.0.left" timestamp="1590248679658">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590246459882" />
+    <state width="1877" height="285" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590248679658" />
     <state width="1877" height="348" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
-    <state width="1877" height="285" key="GridCell.Tab.0.right" timestamp="1590246459882">
+    <state width="1877" height="285" key="GridCell.Tab.0.right" timestamp="1590248679658">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="285" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590246459882" />
+    <state width="1877" height="285" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590248679658" />
     <state width="1877" height="348" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
     <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1590244043501">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -226,7 +254,7 @@
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590152466863" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/OnlineRetail$src.coverage" NAME="src Coverage Results" MODIFIED="1590246437025" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/OnlineRetail$src.coverage" NAME="src Coverage Results" MODIFIED="1590248676536" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/src$src.coverage" NAME="src Coverage Results" MODIFIED="1590166990319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/OnlineRetail$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1590217251254" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
