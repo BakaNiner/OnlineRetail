@@ -6,7 +6,7 @@ import ast
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "secret_key"
-conn = pymssql.connect("127.0.0.1", "sa", "123", "OnlineRetail")
+conn = pymssql.connect("127.0.0.1", "sa", "reallyStrongPwd123", "OnlineRetail")
 conn.autocommit(True)
 cursor = conn.cursor()
 
