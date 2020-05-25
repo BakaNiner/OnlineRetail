@@ -6,7 +6,7 @@ import ast
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "secret_key"
-conn = pymssql.connect("127.0.0.1", "sa", "reallyStrongPwd123", "OnlineRetail")
+conn = pymssql.connect("127.0.0.1", "sa", "123", "OnlineRetail")
 conn.autocommit(True)
 cursor = conn.cursor()
 
@@ -100,14 +100,13 @@ def commentGate():
     if not idx.isdigit():
         return "错误商品id"
 
-    cursor.execute("select productName from Product where productID = {0}".format(idx))
+    cursor.execute("select productName from Product where productID = %d", idx)
     res = cursor.fetchall()
     if len(res) == 0:
         return "错误商品id"
     goodname = res[0][0]
     cursor.execute(
-        "select userName, grade, comment, reviewTime from Review, Customer where productID = {0} and reviewerID = customerID".format(
-            idx))
+        "select userName, grade, comment, reviewTime from Review, Customer where productID = %d and reviewerID = customerID", idx)
     comments = cursor.fetchall()
 
     html = '''
@@ -163,14 +162,14 @@ def commitCommentGate():
     if not idx.isdigit():
         return "错误商品id"
 
-    cursor.execute("select productName from Product where productID = {0}".format(idx))
+    cursor.execute("select productName from Product where productID = %d", idx)
     res = cursor.fetchall()
     if len(res) == 0:
         return "错误商品id"
 
     reviewTime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
     cursor.execute(
-        "insert into Review values ({0}, {1}, {2}, '{3}', '{4}')".format(userid, idx, rate, text, reviewTime))
+        "insert into Review values (%d, %d, %d, %s, %s)", (userid, idx, rate, text, reviewTime))
     return "发表评论成功"
 
 
@@ -180,7 +179,7 @@ def makeCommentGate():
     if not idx.isdigit():
         return "错误商品id"
 
-    cursor.execute("select productName from Product where productID = {0}".format(idx))
+    cursor.execute("select productName from Product where productID = %d", idx)
     res = cursor.fetchall()
     if len(res) == 0:
         return "错误商品id"
@@ -192,7 +191,7 @@ def makeCommentGate():
     if username is None:
         return "您未登录！"
 
-    cursor.execute("select customerID from OrderTable where exists (select * from OrderItem where itemID = {0} and OrderItem.orderID=OrderTable.orderID)".format(idx))
+    cursor.execute("select customerID from OrderTable where exists (select * from OrderItem where itemID = %d and OrderItem.orderID=OrderTable.orderID)", idx)
     temp = cursor.fetchall()
     if (userid,) not in temp:
         return "您未购买本商品，尚无法发表评论！"
@@ -270,8 +269,7 @@ def orderGate():
 
     # 读取商品信息
     cursor.execute(
-        "select orderID, shippingAddressID, totalAmount, orderDate, is_complete from OrderTable where customerID = {0}".format(
-            userid))
+        "select orderID, shippingAddressID, totalAmount, orderDate, is_complete from OrderTable where customerID = %d", userid)
     orders = cursor.fetchall()
     for orderID, shippingAddressID, totalAmount, orderDate, is_complete in orders:
         html += '''
@@ -280,8 +278,7 @@ def orderGate():
 		'''.format(orderID)
 
         cursor.execute(
-            "select itemID, productName, quantity, productFigure from OrderItem, Product where orderID = {0} and OrderItem.itemID = Product.productID".format(
-                orderID))
+            "select itemID, productName, quantity, productFigure from OrderItem, Product where orderID = %d and OrderItem.itemID = Product.productID", orderID)
         goods = cursor.fetchall()
         for idx, goodname, quantity, imageurl in goods:
             html += '''
@@ -295,8 +292,7 @@ def orderGate():
 			'''.format(idx, goodname, quantity, imageurl)
 
         cursor.execute(
-            "select streetAddress, cityName, provinceName, postalCode, phoneNumber from ShipAddress where addressID = {0}".format(
-                shippingAddressID))
+            "select streetAddress, cityName, provinceName, postalCode, phoneNumber from ShipAddress where addressID = %d", shippingAddressID)
         streetAddress, cityName, provinceName, postalCode, phoneNumber = cursor.fetchall()[0]
         html += '''
 			<p> 收货地址：街道：{0}，城市：{1}，省份：{2}，邮政编码：{3}，联系方式：{4} </p>
@@ -326,9 +322,9 @@ def commitOrderGate():
 
     cursor.execute("create table #tempCart(productID INT, productNumber INT)")
     for idx, goodname, price, number, stock in cart:
-        cursor.execute("insert into #tempCart values ({0}, {1})".format(idx, number))
+        cursor.execute("insert into #tempCart values (%d, %d)", (idx, number))
 
-    cursor.execute("select stockAmount from Product where productID = {0}".format(cart[0][0]))
+    cursor.execute("select stockAmount from Product where productID = %d", cart[0][0])
     beforeStock = cursor.fetchall()[0][0]
 
     cursor.execute("""
@@ -337,7 +333,7 @@ def commitOrderGate():
 	               select * from Product, #tempCart where Product.productID = #tempCart.productID and productNumber > stockAmount)""")
     cursor.execute("drop table #tempCart")
 
-    cursor.execute("select stockAmount from Product where productID = {0}".format(cart[0][0]))
+    cursor.execute("select stockAmount from Product where productID = %d", cart[0][0])
     afterStock = cursor.fetchall()[0][0]
     if afterStock == beforeStock:
         session.pop("{0}_cart".format(userid))
@@ -352,26 +348,26 @@ def commitOrderGate():
 
     if is_default == "1":
         cursor.execute(
-            "update ShipAddress set is_default = '0' where customerID = {0} and is_default = '1'".format(userid))
+            "update ShipAddress set is_default = '0' where customerID = %d and is_default = '1'", userid)
 
     cursor.execute(
-        "insert into ShipAddress values ('{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}') select @@IDENTITY".format(
-            streetAddress, cityName, provinceName, postalCode, userid, phoneNumber, is_default))
-    # cursor.execute("select addressID from ShipAddress where")
+        "insert into ShipAddress values (%s, %s, %s, %s, %d, %s, %s) select @@IDENTITY", (streetAddress, cityName, provinceName, postalCode, userid, phoneNumber, is_default))
     addressID = cursor.fetchall()[0][0]
 
     totalAmount = sum(list(map(lambda x: x[2] * x[3], cart)))
     orderDate = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+    # 这句不用防注入
     cursor.execute("insert into OrderTable values ({0}, {1}, {2}, '{3}', 0) select @@IDENTITY".format(addressID, userid,
                                                                                                       totalAmount,
                                                                                                       orderDate))
     orderID = cursor.fetchall()[0][0]
 
     for idx, goodname, price, number, stock in cart:
+        # 这句也不用防注入
         cursor.execute("insert into OrderItem values ({0}, {1}, {2}, {3})".format(orderID, idx, number, price * number))
 
     for idx, goodname, price, number, stock in cart:
-        cursor.execute("delete from ShoppingCart where customerID = {0} and productID = {1}".format(userid, idx))
+        cursor.execute("delete from ShoppingCart where customerID = %d and productID = %d", (userid, idx))
 
     session.pop("{0}_cart".format(userid))
     return "订单提交成功"
@@ -408,8 +404,7 @@ def createOrder():
 	'''
 
     cursor.execute(
-        "select ShoppingCart.productID, productName, productPrice, productQuantity, stockAmount from ShoppingCart, Product where customerID = {0} and ShoppingCart.productID = Product.productID".format(
-            userid))
+        "select ShoppingCart.productID, productName, productPrice, productQuantity, stockAmount from ShoppingCart, Product where customerID = %d and ShoppingCart.productID = Product.productID", userid)
     cart = cursor.fetchall()
     cart = list(filter(lambda x: request.form.get("{}_checkbox".format(x[0])) is not None, cart))
     session["{0}_cart".format(userid)] = cart
@@ -426,8 +421,7 @@ def createOrder():
 
     # 获取默认地址
     cursor.execute(
-        "select streetAddress, cityName, provinceName, postalCode, phoneNumber from ShipAddress where customerID = {0} and is_default = 1".format(
-            userid))
+        "select streetAddress, cityName, provinceName, postalCode, phoneNumber from ShipAddress where customerID = %d and is_default = 1", userid)
     defaultAddress = cursor.fetchall()
 
     if not defaultAddress:
@@ -497,14 +491,13 @@ def add2cartGate():
         return "添加购物车失败！请检查数量是否正确"
 
     addtime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-    cursor.execute("select * from ShoppingCart where customerID = {0} and productID = {1}".format(userid, idx))
+    cursor.execute("select * from ShoppingCart where customerID = %d and productID = %d", (userid, idx))
     res = cursor.fetchall()
     if res:
         cursor.execute(
-            "update ShoppingCart set productQuantity = productQuantity + {2}, addTime = '{3}' where customerID = {0} and productID = {1}".format(
-                userid, idx, number, addtime))
+            "update ShoppingCart set productQuantity = productQuantity + %d, addTime = %s where customerID = %d and productID = %d", (number, addtime, userid, idx))
     else:
-        cursor.execute("insert into ShoppingCart values ({0}, {1}, {2}, '{3}')".format(userid, idx, number, addtime))
+        cursor.execute("insert into ShoppingCart values (%d, %d, %d, %s)", (userid, idx, number, addtime))
     return "添加购物车成功"
 
 
@@ -516,7 +509,7 @@ def removeCartGate():
         return "您未登录！"
 
     idx = request.form["idx"]
-    cursor.execute("delete from ShoppingCart where customerID = {0} and productID = {1}".format(userid, idx))
+    cursor.execute("delete from ShoppingCart where customerID = %d and productID = %d", (userid, idx))
     return "移出成功"
 
 
@@ -553,7 +546,7 @@ def cartGate():
     cursor.execute("""
 				   select ShoppingCart.productID, productName, productPrice, productFigure, productQuantity, addTime, stockAmount
 	 			   from ShoppingCart, Product
-	 			   where customerID = {0} and ShoppingCart.productID = Product.productID""".format(userid))
+	 			   where customerID = %d and ShoppingCart.productID = Product.productID""", userid)
     cart = cursor.fetchall()
 
     # 读取购物车
@@ -608,17 +601,17 @@ def indexGate():
             if not nameState == "用户名未被使用":
                 return nameState
             encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
-            cursor.execute("insert into Customer values ('{0}', '{1}')".format(username, encryptedpwd))
+            cursor.execute("insert into Customer values (%s, %s)", (username, encryptedpwd))
         # 是登录
         else:
-            cursor.execute("select encryptedPassword from Customer where userName = '{0}'".format(username))
+            cursor.execute("select encryptedPassword from Customer where userName = %s", username)
             fetchedpwd = cursor.fetchall()[0][0]
             encryptedpwd = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
             if fetchedpwd != encryptedpwd:
                 return "密码错误"
         # 记录登录信息
         session["username"] = username
-        cursor.execute("select customerID from Customer where userName = '{0}'".format(username))
+        cursor.execute("select customerID from Customer where userName = %s", username)
         session["userid"] = cursor.fetchall()[0][0]
     else:
         username = session["username"]
@@ -658,8 +651,7 @@ def indexGate():
 		'''.format(categoryName)
 
         cursor.execute(
-            "select productID, productName, productPrice, saleAmount, stockAmount, productFigure, productDescription from Product where categoryID = {0}".format(
-                categoryID))
+            "select productID, productName, productPrice, saleAmount, stockAmount, productFigure, productDescription from Product where categoryID = %d", categoryID)
         goods = cursor.fetchall()
         for idx, goodname, price, sold, stock, imageurl, description in goods:
             html += '''
