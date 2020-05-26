@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ef3e6b98-6557-4c05-a5a1-085099bafd65" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/840d33a5-dd66-453e-8cdb-8e5740b31fe7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/840d33a5-dd66-453e-8cdb-8e5740b31fe7.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/840d33a5-dd66-453e-8cdb-8e5740b31fe7/storage_v2/_src_/database/OnlineRetail.Vp1tTA/schema/dbo.sYMBAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/840d33a5-dd66-453e-8cdb-8e5740b31fe7/storage_v2/_src_/database/OnlineRetail.Vp1tTA/schema/dbo.sYMBAA.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/src.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/src.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Database_DDL.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Database_DDL.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/数据库实验班中期报告.doc" beforeDir="false" afterPath="$PROJECT_DIR$/数据库实验班中期报告.doc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/数据库实验班中期报告.pdf" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,12 +54,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="90" />
-    <option name="y" value="23" />
-    <option name="width" value="1254" />
-    <option name="height" value="777" />
   </component>
   <component name="ProjectId" id="1cFeq3fUwMS1Crua79SbQw0QtXl" />
   <component name="ProjectViewState">
@@ -142,6 +133,7 @@
       <workItem from="1590210632522" duration="33970000" />
       <workItem from="1590250299072" duration="536000" />
       <workItem from="1590407284219" duration="2148000" />
+      <workItem from="1590484046593" duration="3953000" />
     </task>
     <servers />
   </component>
@@ -186,26 +178,26 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="823" y="410" key="Github.ShareDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590209813321" />
-    <state width="1877" height="285" key="GridCell.Tab.0.bottom" timestamp="1590409572770">
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom" timestamp="1590489102861">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590409572770" />
-    <state width="1877" height="348" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
-    <state width="1877" height="285" key="GridCell.Tab.0.center" timestamp="1590409572769">
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1590489102861" />
+    <state width="1877" height="285" key="GridCell.Tab.0.center" timestamp="1590489102861">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="285" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590409572769" />
-    <state width="1877" height="348" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
-    <state width="1877" height="285" key="GridCell.Tab.0.left" timestamp="1590409572769">
+    <state width="1877" height="285" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1590489102861" />
+    <state width="1877" height="285" key="GridCell.Tab.0.left" timestamp="1590489102860">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="285" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590409572769" />
-    <state width="1877" height="348" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
-    <state width="1877" height="285" key="GridCell.Tab.0.right" timestamp="1590409572769">
+    <state width="1877" height="285" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1590489102860" />
+    <state width="1877" height="285" key="GridCell.Tab.0.right" timestamp="1590489102861">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="285" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590409572769" />
-    <state width="1877" height="348" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1590167359910" />
+    <state width="1877" height="285" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1590489102861" />
     <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1590249107026">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -248,7 +240,7 @@
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1590152466863" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/OnlineRetail$src.coverage" NAME="src Coverage Results" MODIFIED="1590409508483" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/OnlineRetail$src.coverage" NAME="src Coverage Results" MODIFIED="1590484063549" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/src$src.coverage" NAME="src Coverage Results" MODIFIED="1590166990319" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/OnlineRetail$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1590217251254" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
