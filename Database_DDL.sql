@@ -1,9 +1,7 @@
-/*
 if exists (select * from sysdatabases where name='OnlineRetail')
 		drop database OnlineRetail
 create database OnlineRetail
 go
-*/
 
 /* Change to the OnlineRetail database */
 USE OnlineRetail;
@@ -173,6 +171,44 @@ VALUES
 ('Jones', 'Physics');
 */
 
+INSERT INTO Category
+VALUES
+('REFRIGERATORS'),
+('BATH FAUCETS & SHOWER HEADS'),
+('BLINDS & WINDOW TREATMENTS'),
+('FENCING'),
+('INSULATION'),
+('ENTRY DOORS'),
+('GARAGE DOORS & ACCESSORIES'),
+('HOME ELECTRONICS'),
+('LIGHT BULBS'),
+('KITCHEN SINKS'),
+('CABINETS & CABINET HARDWARE'),
+('KITCHEN ACCESSORIES'),
+('LAWN CARE'),
+('LANDSCAPING'),
+('PATIO FURNITURE'),
+('CLOSET STORAGE'),
+('SHELVES & SHELF BRACKETS');
+
+INSERT INTO ShipAddress
+VALUES
+('24 South Walles','Chicago','IL', NULL, 1,'01-503-555-7555',1),
+('15 West King Drive','Chicago','IL',NULL,1,'01-503-555-7555',0),
+('08 North Michigan Avenue','Chicago','IL',NULL,2,'01-503-555-6874',1),
+('451 Canal Street','Chicago','IL',NULL,3,'01-307-555-4680',1),
+('55 Grizzly Peak Rd.','Butte','MT','59801',4,'01-406-555-5834',1),
+('12 Orchestra Terrace','Walla Walla','WA','99362',4,'01-509-555-7969',0),
+('87 Polk St. Suite 5','San Francisco','CA','94117',5,'01-415-555-5938',1),
+('12 Orchestra Terrace','Kirkland','WA','98034',6,'01-206-555-8257',1),
+('89 Chiaroscuro Rd.','Portland','OR','97219',6,'01-503-555-9573',0),
+('2743 Bering St.','Anchorage','AK','99508',6,'01-907-555-7584',0),
+('187 Suffolk Ln.','Boise','ID','83720',7,'01-208-555-8097',1),
+('55 Grizzly Peak Rd.','Butte','MT','59801',8,'01-406-983-6100',1),
+('305 - 14th Ave. S. Suite 3B','Seattle','WA','98128',9,'01-206-555-4112',1),
+('17030 N 49th st','Phoenix','AZ','85254',10,'01-623-787-9922',1),
+('1654 Columbia St','San Diego','CA','92101',10,'01-619-427-0121',0);
+
 INSERT INTO Product
 VALUES
 ('French Door Refrigerator','Get the storage you need in this refrigerator with water dispenser. An exterior refrigerated drawer keeps frequently used items within easy reach. This refrigerator with refrigerated drawers also gives you access to filtered ice and water without ever opening the door. Plus, the tap touch controls are as easy to clean as they are to use.','static/images/1.jpg', 1,1978.2,20,20),
@@ -215,44 +251,6 @@ VALUES
 ('Shoe Storage','Pull a pair of footwear from this multi-compartment shoe storage bench. Twenty four open cubbies hold your sneakers, sandals, and boots and keep them easily accessible, while the wide, rectangular top offers a sturdy spot to put on and remove your shoes. Finished in laminate in your choice of color, this storage bench makes for a robust complement to your entryway decor.','static/images/38.jpg', 16,225,5 ,8),
 ('Wood Closet Organizers','Bring order to your wardrobe with this Woodcrest closet organizer from John Louis Home. Built with open shelves and three garment bars, this unit offers space for hanging clothes, folded items, and storage bins. With its simple white finish, this organizer brightens the interior of your closet.','static/images/39.jpg', 16,100,6,9),
 ('Decorative Shelving','Wooden shelves with it''s modern and attractive look will give every room its perfect finishing touch. Add it to your room you will see the difference it makes to your room with its elegant look. It suits almost every decor and is great for your kitchen, dining room, living room, bedroom or office. It''s easy to mount and comes with all necessary mounting hardware. Shelf measurements in inches; 22.75" Long x 4.75 High x 4" Deep. ','static/images/40.jpg', 17,600,9,9)
-
-INSERT INTO Category
-VALUES
-('REFRIGERATORS'),
-('BATH FAUCETS & SHOWER HEADS'),
-('BLINDS & WINDOW TREATMENTS'),
-('FENCING'),
-('INSULATION'),
-('ENTRY DOORS'),
-('GARAGE DOORS & ACCESSORIES'),
-('HOME ELECTRONICS'),
-('LIGHT BULBS'),
-('KITCHEN SINKS'),
-('CABINETS & CABINET HARDWARE'),
-('KITCHEN ACCESSORIES'),
-('LAWN CARE'),
-('LANDSCAPING'),
-('PATIO FURNITURE'),
-('CLOSET STORAGE'),
-('SHELVES & SHELF BRACKETS');
-
-INSERT INTO ShipAddress
-VALUES
-('24 South Walles','Chicago','IL', NULL, 1,'01-503-555-7555',1),
-('15 West King Drive','Chicago','IL',NULL,1,'01-503-555-7555',0),
-('08 North Michigan Avenue','Chicago','IL',NULL,2,'01-503-555-6874',1),
-('451 Canal Street','Chicago','IL',NULL,3,'01-307-555-4680',1),
-('55 Grizzly Peak Rd.','Butte','MT','59801',4,'01-406-555-5834',1),
-('12 Orchestra Terrace','Walla Walla','WA','99362',4,'01-509-555-7969',0),
-('87 Polk St. Suite 5','San Francisco','CA','94117',5,'01-415-555-5938',1),
-('12 Orchestra Terrace','Kirkland','WA','98034',6,'01-206-555-8257',1),
-('89 Chiaroscuro Rd.','Portland','OR','97219',6,'01-503-555-9573',0),
-('2743 Bering St.','Anchorage','AK','99508',6,'01-907-555-7584',0),
-('187 Suffolk Ln.','Boise','ID','83720',7,'01-208-555-8097',1),
-('55 Grizzly Peak Rd.','Butte','MT','59801',8,'01-406-983-6100',1),
-('305 - 14th Ave. S. Suite 3B','Seattle','WA','98128',9,'01-206-555-4112',1),
-('17030 N 49th st','Phoenix','AZ','85254',10,'01-623-787-9922',1),
-('1654 Columbia St','San Diego','CA','92101',10,'01-619-427-0121',0);
 
 
 INSERT INTO ShoppingCart
